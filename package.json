@@ -1,0 +1,39 @@
+{
+  "name": "crypto.signals",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@types/material-ui": "^0.21.1",
+    "@types/node-fetch": "^1.6.8",
+    "@types/react-redux": "^5.0.16",
+    "@types/reselect": "^2.2.0",
+    "babel-polyfill": "^6.26.0",
+    "exponential-moving-average": "^1.0.0",
+    "material-ui": "^0.20.0",
+    "node-fetch": "^2.1.2",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-redux": "^5.0.7",
+    "react-scripts-ts": "2.15.1",
+    "redux": "^3.7.2",
+    "redux-devtools": "^3.4.1",
+    "redux-observable": "^0.18.0",
+    "reselect": "^3.0.1",
+    "rxjs": "^5.5.7",
+    "styled-components": "^3.2.1"
+  },
+  "scripts": {
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "deploy": "yarn build && surge ./build hurried-steam.surge.sh",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.2.3",
+    "@types/node": "^8.10.9",
+    "@types/react": "^16.3.11",
+    "@types/react-dom": "^16.0.5",
+    "typescript": "^2.8.1"
+  }
+}
