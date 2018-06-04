@@ -1,11 +1,11 @@
 import * as EMA from 'exponential-moving-average';
-import { IEMA, ITickerResponse } from '../models';
+import { ITickerResponse } from '../models';
 
 export const ema = (tickers: ITickerResponse[], range: number) => {
   const closes = tickers.map(ticker => ticker.close);
   if (closes.length >= range) {
     return EMA(closes, {
-      format: (num: number) => num,
+      format: (num: number) => num.toFixed(4),
       range,
     });
   }
@@ -17,6 +17,15 @@ export interface ICalculateEma {
   ema25TicksSinceCrossning: string;
   ema50TicksSinceCrossning: string;
   ticksSinceCrossing: string;
+}
+
+
+export interface IEMA {
+  ticksSinceCrossing: number;
+  ema50TicksSinceCrossning: number;
+  ema10TicksSinceCrossning: number;
+  ema25TicksSinceCrossning: number;
+  strength: number;
 }
 
 interface IAcc {

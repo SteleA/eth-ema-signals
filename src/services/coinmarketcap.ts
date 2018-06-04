@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
 
-const URL = 'https://api.coinmarketcap.com/v1/ticker/?limit=100';
+const URL = 'https://api.coinmarketcap.com/v1/ticker/?limit=';
 
-export const coinmarketcap = fetch(URL).then(res => res.json());
+export const coinmarketcap = (limit = 100) => fetch(URL + limit).then(res => res.json());

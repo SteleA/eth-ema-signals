@@ -1,5 +1,4 @@
 import { actions, actionTypes } from '../actions/crypto.actions';
-import { getEma } from '../utils/ema';
 
 import * as m from '../models';
 import { ITicker } from '../models';
@@ -9,6 +8,7 @@ export interface IState {
   tickers: m.ITicker[];
   symbols: m.ISymbol[];
   rankings: m.IRanking[];
+  historicData: m.ITicker[];
 }
 
 const initialState = {
@@ -16,22 +16,23 @@ const initialState = {
   symbols: [],
   tickers: [],
   rankings: [],
+  historicData: [],
 };
 
 export const reducer = (state = initialState, action: actions) => {
   switch (action.type) {
     case actionTypes.GET_CRYPTO_SUCCESS: {
-      const payload = action.payload as m.ICrypto;
-      const id = `${payload.pair}${payload.interval}`;
-      const ema: m.IEMA = getEma(payload.data);
-      const newSymbol: m.ISymbol = { id, ...ema, ...payload };
-
-      return {
-        ...state,
-        symbols: state.symbols.some((symbol: m.ISymbol) => symbol.id === id) ?
-          state.symbols.map((symbol: m.ISymbol) => symbol.id === id ? { ...symbol, ...newSymbol } : symbol) :
-          [...state.symbols, newSymbol],
-      };
+      const payload = action.payload as m.IHistoricData;
+      const exists = state.historicData.some((item: m.IHistoricData) => item.id === payload.id);
+      if (exists) {
+        return {
+          ...state,
+          historicData: state.historicData.map((item: m.IHistoricData) =>
+            item.id === payload.id ? {...item, ...payload} : item)
+        };
+      } else {
+        return {...state, historicData: [...state.historicData, payload]};
+      }
     }
 
     case actionTypes.GET_CRYPTO_SYMBOLS_SUCCESS: {
@@ -57,6 +58,11 @@ export const reducer = (state = initialState, action: actions) => {
       return { ...state, coinmarketcap: action.payload as m.IRankingResponse[] };
     }
 
+
+    case actionTypes.BOOTSTRAP_SUCCESS: {
+      return { ...state, watchList: action.payload };
+    }
+
     default:
       return state;
   }
@@ -70,3 +76,6 @@ export const getSymbols = (state: IState) =>
       return {...symbol, ...ticker, ...rank}
     })
     .sort((a: any, b: any) => a.rank - b.rank);
+export const getTickers = (state: IState) => state.tickers;
+
+

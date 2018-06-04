@@ -1,6 +1,10 @@
 import * as m from '../models';
+import { ITicker } from '../models';
 
 export const actionTypes = {
+  BOOTSTRAP: '[Crypto] Bootstrap',
+  BOOTSTRAP_SUCCESS: '[Crypto] Bootstrap Success',
+
   GET_CRYPTOS: '[Crypto] Get Cryptos',
 
   GET_CRYPTO: '[Crypto] Get Crypto',
@@ -18,6 +22,17 @@ export const actionTypes = {
   GET_CRYPTO_SYMBOLS_SUCCESS: '[Crypto] Get Crypto Symbols Success',
 
   MAP_TICKERS_TO_RANKING: '[Crypto] Map Tickers To Ranking',
+
+}
+
+export class BootstrapAction {
+  public readonly type = actionTypes.BOOTSTRAP;
+  constructor(public readonly payload: void = undefined) {}
+}
+
+export class BootstrapSuccessAction {
+  public readonly type = actionTypes.BOOTSTRAP_SUCCESS;
+  constructor(public readonly payload: ITicker[]) {}
 }
 
 export class GetCryptosAction {
@@ -62,7 +77,7 @@ export class GetCryptoSymbolsSuccessAction {
 
 export class GetRankingAction {
   public readonly type = actionTypes.GET_RANKING;
-  constructor(public readonly payload: void = undefined) {}
+  constructor(public readonly payload: number) {}
 }
 
 export class GetRankingSuccessAction {
@@ -80,6 +95,7 @@ export class MapTickersToRankingAction {
   constructor(public readonly payload: m.IRanking[]) {}
 }
 
+
 export type actions = GetCryptosAction
 | GetCryptoAction
 | GetCryptoSuccessAction
@@ -95,4 +111,7 @@ export type actions = GetCryptosAction
 
 | GetTickersAction
 | GetTickersSuccessAction
-| GetTickersFailedAction;
+| GetTickersFailedAction
+
+| BootstrapAction
+| BootstrapSuccessAction;

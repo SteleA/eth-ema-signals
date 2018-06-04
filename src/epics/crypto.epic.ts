@@ -4,40 +4,48 @@ import { actionTypes } from '../actions/crypto.actions';
 import { Store } from 'redux';
 import { ActionsObservable } from 'redux-observable'
 
-import { fromPromise } from 'rxjs/observable/fromPromise';
+// import { fromPromise } from 'rxjs/observable/fromPromise';
 
 import { IState } from '../reducers';
-import { getCrypto } from '../services/api';
+// import { getCrypto } from '../services/api';
 import { BinanceWS } from '../services/binance';
 import { coinmarketcap } from '../services/coinmarketcap';
 
 import * as m from '../models';
 
+export const bootstrapEpic = (action$: ActionsObservable<cryptoActions.BootstrapAction>) =>
+  action$
+    .ofType(actionTypes.BOOTSTRAP)
+    .switchMap(() => [
+      new cryptoActions.GetTickersAction(),
+    ]);
+
 export const getRanking = (action$: ActionsObservable<cryptoActions.GetRankingAction>) =>
   action$
     .ofType(actionTypes.GET_RANKING)
-    .mergeMap(() => coinmarketcap)
+    .mergeMap(({payload}: cryptoActions.GetRankingAction) => coinmarketcap(payload))
     .map((response: m.IRankingResponse[]) => new cryptoActions.GetRankingSuccessAction(response));
 
 export const binanceTickerStreamEpic = (action$: ActionsObservable<cryptoActions.GetTickersAction>) =>
   action$
     .ofType(actionTypes.GET_TICKERS)
-    .mergeMap(() => new BinanceWS().create('!ticker@arr'))
-    .map((tickers: m.ITicker[]) => new cryptoActions.GetTickersSuccessAction(tickers));
+    .mergeMap(() => new BinanceWS().create('!ticker@arr').first())
+    .switchMap((tickers: m.ITicker[]) => [new cryptoActions.GetTickersSuccessAction(tickers)]);
 
-export const getCryptoEpic = (action$: ActionsObservable<cryptoActions.GetCryptoAction>) =>
-  action$
-    .ofType(actionTypes.GET_CRYPTO)
-    .mergeMap(({payload}: cryptoActions.GetCryptoAction) =>
-      fromPromise(getCrypto(payload))
-        .map((response: m.ITickerResponse[]) => ({data: response, ...payload}))
-    )
-    .map((payload: m.ICrypto) => new cryptoActions.GetCryptoSuccessAction(payload));
+// export const getCryptoEpic = (action$: ActionsObservable<watchListActions.AddToWatchListSuccessAction>) =>
+//   action$
+//     .ofType(watchListActions.actionTypes.ADD_TO_WATCHLIST_SUCCESS)
+//     .mergeMap(({payload}: cryptoActions.GetCryptoAction) =>
+//       fromPromise(getCrypto(payload)).map((response: m.ITickerResponse[]) => ({data: response, ...payload}))
+//     )
+//     .map((payload: any) => {
+//       return new cryptoActions.GetCryptoSuccessAction(payload);
+//     });
 
 export const getCryptosEpic = (action$: ActionsObservable<cryptoActions.GetCryptosAction>, store: Store<IState>) =>
   action$
     .ofType(actionTypes.MAP_TICKERS_TO_RANKING)
-    .map(() => store.getState().main)
+    .map(() => store.getState().crypto)
     .map(({rankings, symbols}: {rankings: m.IRanking[], symbols: m.ISymbol[]}) =>
       rankings.reduce((acc, curr: m.IRanking) =>
         symbols.some(symbol => symbol.pair === curr.pair) ? acc : [...acc, curr], []))
@@ -48,8 +56,8 @@ export const addTopRankingCryptoEpic = (action$: ActionsObservable<cryptoActions
   action$
     .ofType(actionTypes.GET_RANKING_SUCCESS, actionTypes.GET_TICKERS_SUCCESS)
     .map(() => {
-      const {main} = store.getState();
-      return {ranking: main.coinmarketcap, tickers: main.tickers};
+      const {crypto} = store.getState();
+      return {ranking: crypto.coinmarketcap, tickers: crypto.tickers};
     })
     .filter(({ranking, tickers}: {ranking: m.IRankingResponse[], tickers: m.ITicker[]}) => {
       return ranking.length > 0 && tickers.length > 0;

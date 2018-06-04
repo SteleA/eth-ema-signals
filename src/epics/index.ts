@@ -1,18 +1,23 @@
 import { combineEpics } from 'redux-observable';
 
 import {
-  addTopRankingCryptoEpic,
   binanceTickerStreamEpic,
-  getCryptoEpic,
+  bootstrapEpic,
+  // getCryptoEpic,
   getCryptosEpic,
   getRanking,
 } from './crypto.epic';
 
+import * as watchListEpics from './watchlist.epics';
+
 export default combineEpics(
-  getCryptoEpic,
+  // getCryptoEpic,
   getCryptosEpic,
   binanceTickerStreamEpic as any,
   getRanking,
-  addTopRankingCryptoEpic
+  ...watchListEpics.default,
+  // watchListEpics.addToWatchListEpic,
+  // watchListEpics.removeFromWatchListEpic,
+  bootstrapEpic,
 );
 

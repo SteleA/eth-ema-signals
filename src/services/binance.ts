@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { ITicker, IWSTickerResponse } from '../models';
+import { EExchanges, ITicker, IWSTickerResponse } from '../models';
 
 export class BinanceWS {
   public URL = 'wss://stream.binance.com:9443/ws/';
@@ -20,6 +20,7 @@ export class BinanceWS {
             priceChangePercent: ticker.P,
             totalTradedQuoteAssetVolume: ticker.q,
             volume: ticker.v,
+            exchange: EExchanges.BINANCE
         })
       ));
   }

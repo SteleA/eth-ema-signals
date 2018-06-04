@@ -1,13 +1,13 @@
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { applyMiddleware, compose, createStore } from 'redux';
 import { createEpicMiddleware } from 'redux-observable';
+
 import 'rxjs';
 
-import App from './App';
+import App from './containers/App';
 import rootEpics from './epics'
 import rootReducer from './reducers'
 import registerServiceWorker from './registerServiceWorker';
@@ -27,9 +27,7 @@ const store = createStore(
 
 ReactDOM.render(
   <Provider store={store}>
-    <MuiThemeProvider>
-      <App />
-    </MuiThemeProvider>
+    <App />
   </Provider>,
   document.getElementById('root') as HTMLElement
 );
